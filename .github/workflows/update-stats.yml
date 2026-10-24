@@ -1,0 +1,26 @@
+name: Update stats
+
+on:
+  schedule:
+    # Runs at 12am UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    name: Update Readme with Metrics
+    runs-on: ubuntu-latest
+    env:
+      WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}
+    steps:
+      - name: Skip when WakaTime is not configured
+        if: env.WAKATIME_API_KEY == ''
+        run: echo "WAKATIME_API_KEY secret not set; skipping."
+      - uses: athul/waka-readme@master
+        if: env.WAKATIME_API_KEY != ''
+        with:
+          WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}
+          SHOW_TITLE: true
